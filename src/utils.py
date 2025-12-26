@@ -22,3 +22,38 @@ def save_object(file_path: str, obj: object) -> None:
     except Exception as e:
         logging.error("Error occurred while saving object")
         raise CustomException(e, sys)
+
+def evaluate_models(X_train, y_train, X_test, y_test, models):
+    '''
+    This function evaluates multiple machine learning models and returns their R2 scores.
+    '''
+    from sklearn.metrics import r2_score
+
+    try:
+        report = {}
+
+        for i in range(len(list(models))):
+            model = list(models.values())[i]
+            model_name = list(models.keys())[i]
+
+            # Train the model
+            model.fit(X_train, y_train)
+
+            # Predict on training data
+            y_train_pred = model.predict(X_train)
+
+            # Predict on test data
+            y_test_pred = model.predict(X_test)
+
+            # Calculate R2 score
+            test_model_score = r2_score(y_test, y_test_pred)
+            train_model_score = r2_score(y_train, y_train_pred)
+
+            report[list(models.keys())[i]] = test_model_score
+        
+        return report
+    
+    except Exception as e:
+        logging.error("Error occurred while evaluating models")
+        raise CustomException(e, sys)
+    
