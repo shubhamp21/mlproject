@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import dill
 
+from sklearn.model_selection import GridSearchCV
+
 from src.exception import CustomException
 from src.logger import logging
 
@@ -23,7 +25,7 @@ def save_object(file_path: str, obj: object) -> None:
         logging.error("Error occurred while saving object")
         raise CustomException(e, sys)
 
-def evaluate_models(X_train, y_train, X_test, y_test, models):
+def evaluate_models(X_train, y_train, X_test, y_test, models, params):
     '''
     This function evaluates multiple machine learning models and returns their R2 scores.
     '''
@@ -34,7 +36,12 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
 
         for i in range(len(list(models))):
             model = list(models.values())[i]
-            model_name = list(models.keys())[i]
+            param = params[list(models.keys())[i]]
+
+            gs = GridSearchCV(model, param, cv=3)
+            gs.fit(X_train, y_train)
+
+            model.set_params(**gs.best_params_)
 
             # Train the model
             model.fit(X_train, y_train)
