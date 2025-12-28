@@ -64,3 +64,15 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, params):
         logging.error("Error occurred while evaluating models")
         raise CustomException(e, sys)
     
+def load_object(file_path: str) -> object:
+    '''
+    This function loads a Python object from the specified file path using joblib.
+    '''
+    try:
+        with open(file_path, 'rb') as file_obj:
+            return dill.load(file_obj)
+        
+    except Exception as e:
+        logging.error("Error occurred while loading object")
+        raise CustomException(e, sys)
+    
